@@ -23,6 +23,7 @@ pub struct Logger {
 
 singleton!(Logger, LOGGER);
 
+// TODO: sidecar/service file log writer
 impl Logger {
     fn new() -> Self {
         Self {

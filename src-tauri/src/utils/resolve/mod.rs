@@ -1,7 +1,6 @@
 use std::sync::atomic::{AtomicBool, Ordering};
 
 use anyhow::Result;
-use flexi_logger::LoggerHandle;
 
 use crate::{
     config::Config,
@@ -28,19 +27,18 @@ pub mod window_script;
 
 static RESOLVE_DONE: AtomicBool = AtomicBool::new(false);
 
-pub async fn prioritize_initialization() -> Option<LoggerHandle> {
+pub async fn prioritize_initialization() -> anyhow::Result<()> {
     init_work_config().await;
     init_resources().await;
 
     #[cfg(not(feature = "tauri-dev"))]
     {
+        use crate::core::logger::Logger;
+
         logging!(info, Type::Setup, "Initializing logger");
-        init::init_logger().await.ok()
+        Logger::global().init().await?;
     }
-    #[cfg(feature = "tauri-dev")]
-    {
-        None
-    }
+    Ok(())
 }
 
 pub fn resolve_setup_handle() {

@@ -243,7 +243,7 @@ pub fn run() {
                 .set(app.app_handle().clone())
                 .expect("failed to set global app handle");
 
-            let _handle = AsyncHandler::block_on(async { prioritize_initialization().await });
+            AsyncHandler::block_on(async { prioritize_initialization().await })?;
 
             logging!(info, Type::Setup, "开始应用初始化...");
             if let Err(e) = app_init::setup_autostart(app) {

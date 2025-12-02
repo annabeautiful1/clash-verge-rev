@@ -101,14 +101,14 @@ pub fn write_sidecar_log(
 }
 
 #[cfg(not(feature = "tauri-dev"))]
-pub struct NoModuleFilter<'a>(pub &'a [&'a str]);
+pub struct NoModuleFilter<'a>(pub Vec<&'a str>);
 
 #[cfg(not(feature = "tauri-dev"))]
 impl<'a> NoModuleFilter<'a> {
     #[inline]
     pub fn filter(&self, record: &Record) -> bool {
         if let Some(module) = record.module_path() {
-            for blocked in self.0 {
+            for blocked in self.0.iter() {
                 if module.len() >= blocked.len()
                     && module.as_bytes()[..blocked.len()] == blocked.as_bytes()[..]
                 {

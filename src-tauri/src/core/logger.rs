@@ -17,6 +17,7 @@ pub static CLASH_LOGGER: Lazy<Arc<AsyncLogger>> = Lazy::new(|| Arc::new(AsyncLog
 
 use crate::{config::Config, singleton, utils::dirs};
 
+#[derive(Default)]
 pub struct Logger {
     handle: Arc<Mutex<Option<LoggerHandle>>>,
 }
@@ -26,9 +27,7 @@ singleton!(Logger, LOGGER);
 // TODO: sidecar/service file log writer
 impl Logger {
     fn new() -> Self {
-        Self {
-            handle: Arc::new(Mutex::new(None)),
-        }
+        Self::default()
     }
 
     #[cfg(not(feature = "tauri-dev"))]
@@ -61,22 +60,14 @@ impl Logger {
                 },
                 Cleanup::KeepLogFiles(log_max_count),
             );
-        #[cfg(not(feature = "tracing"))]
-        let logger = logger.filter(Box::new(NoModuleFilter(&[
-            "wry",
-            "tauri",
-            "tokio_tungstenite",
-            "tungstenite",
-        ])));
 
+        let mut filter_modules = vec!["wry", "tokio_tungstenite", "tungstenite"];
+        #[cfg(not(feature = "tracing"))]
+        filter_modules.push("tauri");
         #[cfg(feature = "tracing")]
-        let logger = logger.filter(Box::new(NoModuleFilter(&[
-            "wry",
-            "tauri_plugin_mihomo",
-            "tokio_tungstenite",
-            "tungstenite",
-            "kode_bridge",
-        ])));
+        filter_modules.extend(["tauri_plugin_mihomo", "kode_bridge"]);
+
+        let logger = logger.filter(Box::new(NoModuleFilter(filter_modules)));
 
         let handle = logger.start()?;
         *self.handle.lock() = Some(handle);

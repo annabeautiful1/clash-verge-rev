@@ -4,27 +4,34 @@ use anyhow::{Result, bail};
 use clash_verge_logger::AsyncLogger;
 #[cfg(not(feature = "tauri-dev"))]
 use clash_verge_logging::NoModuleFilter;
+use clash_verge_logging::{Type, logging};
+use compact_str::CompactString;
 use flexi_logger::{
-    Cleanup, Criterion, FileSpec, LogSpecBuilder, LogSpecification, LoggerHandle,
-    writers::{FileLogWriter, FileLogWriterBuilder},
+    Cleanup, Criterion, DeferredNow, FileSpec, LogSpecBuilder, LogSpecification, LoggerHandle,
+    writers::{FileLogWriter, FileLogWriterBuilder, LogWriter as _},
 };
-use log::LevelFilter;
+use log::{Level, LevelFilter, Record};
 use once_cell::sync::Lazy;
-use parking_lot::Mutex;
+use parking_lot::{Mutex, RwLock};
 
 // TODO: remove it
 pub static CLASH_LOGGER: Lazy<Arc<AsyncLogger>> = Lazy::new(|| Arc::new(AsyncLogger::new()));
 
-use crate::{config::Config, singleton, utils::dirs};
+use crate::{
+    config::Config,
+    singleton,
+    utils::{dirs, init::sidecar_writer},
+};
 
 #[derive(Default)]
 pub struct Logger {
     handle: Arc<Mutex<Option<LoggerHandle>>>,
+    sidecar_file_writer: Arc<RwLock<Option<FileLogWriter>>>,
 }
 
 singleton!(Logger, LOGGER);
 
-// TODO: sidecar/service file log writer
+// TODO: service file log writer
 impl Logger {
     fn new() -> Self {
         Self::default()
@@ -32,6 +39,8 @@ impl Logger {
 
     #[cfg(not(feature = "tauri-dev"))]
     pub async fn init(&self) -> Result<()> {
+        use crate::utils::init::sidecar_writer;
+
         let (log_level, log_max_size, log_max_count) = {
             let verge_guard = Config::verge().await;
             let verge = verge_guard.data_arc();
@@ -70,7 +79,10 @@ impl Logger {
         let logger = logger.filter(Box::new(NoModuleFilter(filter_modules)));
 
         let handle = logger.start()?;
+        let sidecar_file_writer = sidecar_writer().await?;
+
         *self.handle.lock() = Some(handle);
+        *self.sidecar_file_writer.write() = Some(sidecar_file_writer);
 
         Ok(())
     }
@@ -131,6 +143,26 @@ impl Logger {
         } else {
             bail!("failed to get logger handle, make sure it init");
         };
+        let sidecar_writer = sidecar_writer().await?;
+        *self.sidecar_file_writer.write() = Some(sidecar_writer);
         Ok(())
+    }
+
+    pub fn writer_sidecar_log(&self, level: Level, message: &CompactString) {
+        if let Some(writer) = self.sidecar_file_writer.read().as_ref() {
+            let mut now = DeferredNow::default();
+
+            let args = format_args!("{}", message);
+
+            let record = Record::builder()
+                .args(args)
+                .level(level)
+                .target("sidecar")
+                .build();
+
+            let _ = writer.write(&mut now, &record);
+        } else {
+            logging!(error, Type::System, "failed to get sidecar file log writer");
+        }
     }
 }

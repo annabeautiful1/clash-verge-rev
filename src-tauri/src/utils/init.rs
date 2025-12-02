@@ -24,7 +24,7 @@ use tokio::fs::DirEntry;
 pub async fn sidecar_writer() -> Result<FileLogWriter> {
     let (log_max_size, log_max_count) = {
         let verge_guard = Config::verge().await;
-        let verge = verge_guard.data_arc();
+        let verge = verge_guard.latest_arc();
         (
             verge.app_log_max_size.unwrap_or(128),
             verge.app_log_max_count.unwrap_or(8),

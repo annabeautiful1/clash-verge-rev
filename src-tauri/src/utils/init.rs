@@ -6,66 +6,17 @@ use crate::{
     logging,
     process::AsyncHandler,
     utils::{
-        dirs::{self, PathBufExec as _, service_log_dir, sidecar_log_dir},
+        dirs::{self, PathBufExec as _},
         help,
     },
 };
 use anyhow::Result;
 use chrono::{Local, TimeZone as _};
 use clash_verge_logging::Type;
-use clash_verge_service_ipc::WriterConfig;
-use flexi_logger::writers::FileLogWriter;
-use flexi_logger::{Cleanup, Criterion, FileSpec};
 use std::{path::PathBuf, str::FromStr as _};
 use tauri_plugin_shell::ShellExt as _;
 use tokio::fs;
 use tokio::fs::DirEntry;
-
-pub async fn sidecar_writer() -> Result<FileLogWriter> {
-    let (log_max_size, log_max_count) = {
-        let verge_guard = Config::verge().await;
-        let verge = verge_guard.latest_arc();
-        (
-            verge.app_log_max_size.unwrap_or(128),
-            verge.app_log_max_count.unwrap_or(8),
-        )
-    };
-    let sidecar_log_dir = sidecar_log_dir()?;
-    Ok(FileLogWriter::builder(
-        FileSpec::default()
-            .directory(sidecar_log_dir)
-            .basename("sidecar")
-            .suppress_timestamp(),
-    )
-    .format(clash_verge_logger::file_format_without_level)
-    .rotate(
-        Criterion::Size(log_max_size * 1024),
-        flexi_logger::Naming::TimestampsCustomFormat {
-            current_infix: Some("latest"),
-            format: "%Y-%m-%d_%H-%M-%S",
-        },
-        Cleanup::KeepLogFiles(log_max_count),
-    )
-    .try_build()?)
-}
-
-pub async fn service_writer_config() -> Result<WriterConfig> {
-    let (log_max_size, log_max_count) = {
-        let verge_guard = Config::verge().await;
-        let verge = verge_guard.data_arc();
-        (
-            verge.app_log_max_size.unwrap_or(128),
-            verge.app_log_max_count.unwrap_or(8),
-        )
-    };
-    let service_log_dir = dirs::path_to_str(&service_log_dir()?)?.into();
-
-    Ok(WriterConfig {
-        directory: service_log_dir,
-        max_log_size: log_max_size * 1024,
-        max_log_files: log_max_count,
-    })
-}
 
 // TODO flexi_logger 提供了最大保留天数，或许我们应该用内置删除log文件
 /// 删除log文件

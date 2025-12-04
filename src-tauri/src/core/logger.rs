@@ -4,6 +4,7 @@ use anyhow::{Result, bail};
 #[cfg(not(feature = "tauri-dev"))]
 use clash_verge_logging::NoModuleFilter;
 use clash_verge_logging::{Type, logging};
+use clash_verge_service_ipc::WriterConfig;
 use compact_str::CompactString;
 use flexi_logger::{
     Cleanup, Criterion, DeferredNow, FileSpec, LogSpecBuilder, LogSpecification, LoggerHandle,
@@ -15,7 +16,7 @@ use parking_lot::{Mutex, RwLock};
 use crate::{
     config::Config,
     singleton,
-    utils::{dirs, init::sidecar_writer},
+    utils::dirs::{self, service_log_dir, sidecar_log_dir},
 };
 
 #[derive(Default)]
@@ -34,8 +35,6 @@ impl Logger {
 
     #[cfg(not(feature = "tauri-dev"))]
     pub async fn init(&self) -> Result<()> {
-        use crate::utils::init::sidecar_writer;
-
         let (log_level, log_max_size, log_max_count) = {
             let verge_guard = Config::verge().await;
             let verge = verge_guard.data_arc();
@@ -74,7 +73,7 @@ impl Logger {
         let logger = logger.filter(Box::new(NoModuleFilter(filter_modules)));
 
         let handle = logger.start()?;
-        let sidecar_file_writer = sidecar_writer().await?;
+        let sidecar_file_writer = Self::sidecar_writer().await?;
 
         *self.handle.lock() = Some(handle);
         *self.sidecar_file_writer.write() = Some(sidecar_file_writer);
@@ -138,9 +137,37 @@ impl Logger {
         } else {
             bail!("failed to get logger handle, make sure it init");
         };
-        let sidecar_writer = sidecar_writer().await?;
+        let sidecar_writer = Self::sidecar_writer().await?;
         *self.sidecar_file_writer.write() = Some(sidecar_writer);
         Ok(())
+    }
+
+    async fn sidecar_writer() -> Result<FileLogWriter> {
+        let (log_max_size, log_max_count) = {
+            let verge_guard = Config::verge().await;
+            let verge = verge_guard.latest_arc();
+            (
+                verge.app_log_max_size.unwrap_or(128),
+                verge.app_log_max_count.unwrap_or(8),
+            )
+        };
+        let sidecar_log_dir = sidecar_log_dir()?;
+        Ok(FileLogWriter::builder(
+            FileSpec::default()
+                .directory(sidecar_log_dir)
+                .basename("sidecar")
+                .suppress_timestamp(),
+        )
+        .format(clash_verge_logger::file_format_without_level)
+        .rotate(
+            Criterion::Size(log_max_size * 1024),
+            flexi_logger::Naming::TimestampsCustomFormat {
+                current_infix: Some("latest"),
+                format: "%Y-%m-%d_%H-%M-%S",
+            },
+            Cleanup::KeepLogFiles(log_max_count),
+        )
+        .try_build()?)
     }
 
     pub fn writer_sidecar_log(&self, level: Level, message: &CompactString) {
@@ -159,5 +186,23 @@ impl Logger {
         } else {
             logging!(error, Type::System, "failed to get sidecar file log writer");
         }
+    }
+
+    pub async fn service_writer_config() -> Result<WriterConfig> {
+        let (log_max_size, log_max_count) = {
+            let verge_guard = Config::verge().await;
+            let verge = verge_guard.data_arc();
+            (
+                verge.app_log_max_size.unwrap_or(128),
+                verge.app_log_max_count.unwrap_or(8),
+            )
+        };
+        let service_log_dir = dirs::path_to_str(&service_log_dir()?)?.into();
+
+        Ok(WriterConfig {
+            directory: service_log_dir,
+            max_log_size: log_max_size * 1024,
+            max_log_files: log_max_count,
+        })
     }
 }

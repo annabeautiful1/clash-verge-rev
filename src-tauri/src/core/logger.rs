@@ -1,7 +1,6 @@
 use std::{str::FromStr as _, sync::Arc};
 
 use anyhow::{Result, bail};
-use clash_verge_logger::AsyncLogger;
 #[cfg(not(feature = "tauri-dev"))]
 use clash_verge_logging::NoModuleFilter;
 use clash_verge_logging::{Type, logging};
@@ -11,11 +10,7 @@ use flexi_logger::{
     writers::{FileLogWriter, FileLogWriterBuilder, LogWriter as _},
 };
 use log::{Level, LevelFilter, Record};
-use once_cell::sync::Lazy;
 use parking_lot::{Mutex, RwLock};
-
-// TODO: remove it
-pub static CLASH_LOGGER: Lazy<Arc<AsyncLogger>> = Lazy::new(|| Arc::new(AsyncLogger::new()));
 
 use crate::{
     config::Config,

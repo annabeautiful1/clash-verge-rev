@@ -1,6 +1,5 @@
 use compact_str::CompactString;
 use flexi_logger::DeferredNow;
-#[cfg(not(feature = "tauri-dev"))]
 use flexi_logger::filter::LogLineFilter;
 use flexi_logger::writers::FileLogWriter;
 use flexi_logger::writers::LogWriter as _;
@@ -100,10 +99,8 @@ pub fn write_sidecar_log(
     let _ = writer.write(now, &record);
 }
 
-#[cfg(not(feature = "tauri-dev"))]
 pub struct NoModuleFilter<'a>(pub Vec<&'a str>);
 
-#[cfg(not(feature = "tauri-dev"))]
 impl<'a> NoModuleFilter<'a> {
     #[inline]
     pub fn filter(&self, record: &Record) -> bool {
@@ -120,7 +117,6 @@ impl<'a> NoModuleFilter<'a> {
     }
 }
 
-#[cfg(not(feature = "tauri-dev"))]
 impl<'a> LogLineFilter for NoModuleFilter<'a> {
     #[inline]
     fn write(

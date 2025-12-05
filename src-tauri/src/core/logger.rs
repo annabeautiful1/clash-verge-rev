@@ -50,7 +50,6 @@ impl Logger {
         Self::default()
     }
 
-    #[cfg(not(feature = "tauri-dev"))]
     pub async fn init(&self) -> Result<()> {
         let (log_level, log_max_size, log_max_count) = {
             let verge_guard = crate::config::Config::verge().await;
@@ -69,35 +68,38 @@ impl Logger {
         self.log_max_size.store(log_max_size, Ordering::SeqCst);
         self.log_max_count.store(log_max_count, Ordering::SeqCst);
 
-        let log_spec = Self::generate_log_spec(log_level);
-        let log_dir = dirs::app_logs_dir()?;
-        let logger = flexi_logger::Logger::with(log_spec)
-            .log_to_file(FileSpec::default().directory(log_dir).basename(""))
-            .duplicate_to_stdout(log_level.into())
-            .format(clash_verge_logger::console_format)
-            .format_for_files(clash_verge_logger::file_format_with_level)
-            .rotate(
-                Criterion::Size(log_max_size * 1024),
-                flexi_logger::Naming::TimestampsCustomFormat {
-                    current_infix: Some("latest"),
-                    format: "%Y-%m-%d_%H-%M-%S",
-                },
-                Cleanup::KeepLogFiles(log_max_count),
-            );
+        #[cfg(not(feature = "tauri-dev"))]
+        {
+            let log_spec = Self::generate_log_spec(log_level);
+            let log_dir = dirs::app_logs_dir()?;
+            let logger = flexi_logger::Logger::with(log_spec)
+                .log_to_file(FileSpec::default().directory(log_dir).basename(""))
+                .duplicate_to_stdout(log_level.into())
+                .format(clash_verge_logger::console_format)
+                .format_for_files(clash_verge_logger::file_format_with_level)
+                .rotate(
+                    Criterion::Size(log_max_size * 1024),
+                    flexi_logger::Naming::TimestampsCustomFormat {
+                        current_infix: Some("latest"),
+                        format: "%Y-%m-%d_%H-%M-%S",
+                    },
+                    Cleanup::KeepLogFiles(log_max_count),
+                );
 
-        let mut filter_modules = vec!["wry", "tokio_tungstenite", "tungstenite"];
-        #[cfg(not(feature = "tracing"))]
-        filter_modules.push("tauri");
-        #[cfg(feature = "tracing")]
-        filter_modules.extend(["tauri_plugin_mihomo", "kode_bridge"]);
-        let logger = logger.filter(Box::new(clash_verge_logging::NoModuleFilter(
-            filter_modules,
-        )));
+            let mut filter_modules = vec!["wry", "tokio_tungstenite", "tungstenite"];
+            #[cfg(not(feature = "tracing"))]
+            filter_modules.push("tauri");
+            #[cfg(feature = "tracing")]
+            filter_modules.extend(["tauri_plugin_mihomo", "kode_bridge"]);
+            let logger = logger.filter(Box::new(clash_verge_logging::NoModuleFilter(
+                filter_modules,
+            )));
 
-        let handle = logger.start()?;
-        let sidecar_file_writer = self.sidecar_writer()?;
+            let handle = logger.start()?;
+            *self.handle.lock() = Some(handle);
+        }
 
-        *self.handle.lock() = Some(handle);
+        let sidecar_file_writer = self.generate_sidecar_writer()?;
         *self.sidecar_file_writer.write() = Some(sidecar_file_writer);
 
         Ok(())
@@ -133,6 +135,7 @@ impl Logger {
         Ok(flwb)
     }
 
+    /// only update app log level
     pub fn update_log_level(&self, level: LevelFilter) -> Result<()> {
         println!("refresh log level");
         *self.log_level.write() = level;
@@ -147,6 +150,7 @@ impl Logger {
         Ok(())
     }
 
+    /// update app and mihomo core log config
     pub fn update_log_config(&self, log_max_size: u64, log_max_count: usize) -> Result<()> {
         println!("refresh log file");
         self.log_max_size.store(log_max_size, Ordering::SeqCst);
@@ -157,12 +161,13 @@ impl Logger {
         } else {
             bail!("failed to get logger handle, make sure it init");
         };
-        let sidecar_writer = self.sidecar_writer()?;
+        let sidecar_writer = self.generate_sidecar_writer()?;
         *self.sidecar_file_writer.write() = Some(sidecar_writer);
+        // TODO: if core run by service mode, service need to provide a API to update log config
         Ok(())
     }
 
-    fn sidecar_writer(&self) -> Result<FileLogWriter> {
+    fn generate_sidecar_writer(&self) -> Result<FileLogWriter> {
         let sidecar_log_dir = sidecar_log_dir()?;
         let log_max_size = self.log_max_size.load(Ordering::SeqCst);
         let log_max_count = self.log_max_count.load(Ordering::SeqCst);

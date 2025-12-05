@@ -7,6 +7,7 @@ use crate::{
     core::{
         CoreManager, Timer, handle,
         hotkey::Hotkey,
+        logger::Logger,
         service::{SERVICE_MANAGER, ServiceManager, is_service_ipc_path_exists},
         sysopt,
         tray::Tray,
@@ -30,14 +31,8 @@ static RESOLVE_DONE: AtomicBool = AtomicBool::new(false);
 pub async fn prioritize_initialization() -> anyhow::Result<()> {
     init_work_config().await;
     init_resources().await;
-
-    #[cfg(not(feature = "tauri-dev"))]
-    {
-        use crate::core::logger::Logger;
-
-        logging!(info, Type::Setup, "Initializing logger");
-        Logger::global().init().await?;
-    }
+    logging!(info, Type::Setup, "Initializing logger");
+    Logger::global().init().await?;
     Ok(())
 }
 

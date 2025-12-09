@@ -18,6 +18,7 @@ use log::{Level, LevelFilter, Record};
 use parking_lot::{Mutex, RwLock};
 
 use crate::{
+    core::service,
     singleton,
     utils::dirs::{self, service_log_dir, sidecar_log_dir},
 };
@@ -151,7 +152,7 @@ impl Logger {
     }
 
     /// update app and mihomo core log config
-    pub fn update_log_config(&self, log_max_size: u64, log_max_count: usize) -> Result<()> {
+    pub async fn update_log_config(&self, log_max_size: u64, log_max_count: usize) -> Result<()> {
         println!("refresh log file");
         self.log_max_size.store(log_max_size, Ordering::SeqCst);
         self.log_max_count.store(log_max_count, Ordering::SeqCst);
@@ -163,7 +164,19 @@ impl Logger {
         };
         let sidecar_writer = self.generate_sidecar_writer()?;
         *self.sidecar_file_writer.write() = Some(sidecar_writer);
-        // TODO: if core run by service mode, service need to provide a API to update log config
+
+        // update service writer config
+        if service::is_service_ipc_path_exists() && service::is_service_available().await.is_ok() {
+            let service_log_dir = dirs::path_to_str(&service_log_dir()?)?.into();
+            // TODO: update writer always timeout, maybe it has problem on service server.
+            clash_verge_service_ipc::update_writer(&WriterConfig {
+                directory: service_log_dir,
+                max_log_size: log_max_size,
+                max_log_files: log_max_count,
+            })
+            .await?;
+        }
+
         Ok(())
     }
 
@@ -208,11 +221,12 @@ impl Logger {
         let service_log_dir = dirs::path_to_str(&service_log_dir()?)?.into();
         let log_max_size = self.log_max_size.load(Ordering::SeqCst);
         let log_max_count = self.log_max_count.load(Ordering::SeqCst);
-
-        Ok(WriterConfig {
+        let writer_config = WriterConfig {
             directory: service_log_dir,
             max_log_size: log_max_size * 1024,
             max_log_files: log_max_count,
-        })
+        };
+
+        Ok(writer_config)
     }
 }

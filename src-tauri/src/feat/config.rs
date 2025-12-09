@@ -257,7 +257,9 @@ async fn process_terminated_flags(update_flags: i32, patch: &IVerge) -> Result<(
     if update_flags & (UpdateFlags::LogFile as i32) != 0 {
         let log_max_size = patch.app_log_max_size.unwrap_or(128);
         let log_max_count = patch.app_log_max_count.unwrap_or(8);
-        Logger::global().update_log_config(log_max_size, log_max_count)?;
+        Logger::global()
+            .update_log_config(log_max_size, log_max_count)
+            .await?;
     }
     Ok(())
 }

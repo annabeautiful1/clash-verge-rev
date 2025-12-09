@@ -1315,8 +1315,8 @@ dependencies = [
 
 [[package]]
 name = "clash_verge_service_ipc"
-version = "2.0.23"
-source = "git+https://github.com/clash-verge-rev/clash-verge-service-ipc#957fdfa7d26ba7afa1a64efef925c99163fdc598"
+version = "2.0.24"
+source = "git+https://github.com/clash-verge-rev/clash-verge-service-ipc?branch=feat%2Fupdate-writer-config#58ca319ea7f6f6ccca6b0553b9f9ab22ceb8ecee"
 dependencies = [
  "anyhow",
  "compact_str",

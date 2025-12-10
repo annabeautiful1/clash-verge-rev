@@ -168,10 +168,9 @@ impl Logger {
         // update service writer config
         if service::is_service_ipc_path_exists() && service::is_service_available().await.is_ok() {
             let service_log_dir = dirs::path_to_str(&service_log_dir()?)?.into();
-            // TODO: update writer always timeout, maybe it has problem on service server.
             clash_verge_service_ipc::update_writer(&WriterConfig {
                 directory: service_log_dir,
-                max_log_size: log_max_size,
+                max_log_size: log_max_size * 1024,
                 max_log_files: log_max_count,
             })
             .await?;

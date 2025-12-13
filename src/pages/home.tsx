@@ -1,6 +1,6 @@
 import {
   DnsOutlined,
-  HelpOutlineRounded,
+  DesktopWindowsOutlined,
   HistoryEduOutlined,
   RouterOutlined,
   SettingsOutlined,
@@ -261,9 +261,9 @@ const HomePage = () => {
 
   const effectiveHomeCards = pendingLocalCards ?? remoteHomeCards;
 
-  // 文档链接函数
-  const toGithubDoc = useLockFn(() => {
-    return openWebUrl("https://clash-verge-rev.github.io/index.html");
+  // 官网链接函数
+  const toOfficialWebsite = useLockFn(() => {
+    return openWebUrl("https://bbxy88.com");
   });
 
   // 新增：打开设置弹窗
@@ -377,9 +377,9 @@ const HomePage = () => {
               <HistoryEduOutlined />
             </IconButton>
           </Tooltip>
-          <Tooltip title={t("home.page.tooltips.manual")} arrow>
-            <IconButton onClick={toGithubDoc} size="small" color="inherit">
-              <HelpOutlineRounded />
+          <Tooltip title={t("home.page.tooltips.website")} arrow>
+            <IconButton onClick={toOfficialWebsite} size="small" color="inherit">
+              <DesktopWindowsOutlined />
             </IconButton>
           </Tooltip>
           <Tooltip title={t("home.page.tooltips.settings")} arrow>

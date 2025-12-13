@@ -134,22 +134,8 @@ const localVersionNormalized = normalizeVersion(appVersion);
 export const checkUpdateSafe = async (
   options?: CheckOptions,
 ): Promise<Update | null> => {
-  const result = await check({ ...(options ?? {}), allowDowngrades: false });
-  if (!result) return null;
-
-  const remoteVersion = resolveRemoteVersion(result);
-  const comparison = compareVersions(remoteVersion, localVersionNormalized);
-
-  if (comparison !== null && comparison <= 0) {
-    try {
-      await result.close();
-    } catch (err) {
-      console.warn("[updater] failed to close stale update resource", err);
-    }
-    return null;
-  }
-
-  return result;
+  // 禁用自动更新检查
+  return null;
 };
 
 export type { CheckOptions };

@@ -126,7 +126,7 @@ export function UpdateViewer({ ref }: { ref?: Ref<DialogRef> }) {
               size="small"
               onClick={() => {
                 openUrl(
-                  `https://github.com/clash-verge-rev/clash-verge-rev/releases/tag/v${updateInfo?.version}`,
+                  `https://bbxy88.com`,
                 );
               }}
             >

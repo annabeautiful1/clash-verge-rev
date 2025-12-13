@@ -1,10 +1,10 @@
 [package]
 name = "clash-verge"
-version = "2.4.4-rc"
+version = "1.0.0-bbxy"
 description = "clash verge"
 authors = ["zzzgydi", "Tunglies", "wonfen", "MystiPanda"]
 license = "GPL-3.0-only"
-repository = "https://github.com/clash-verge-rev/clash-verge-rev.git"
+repository = "https://bbxy88.com"
 default-run = "clash-verge"
 build = "build.rs"
 edition = { workspace = true }

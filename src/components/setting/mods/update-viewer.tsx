@@ -126,7 +126,7 @@ export function UpdateViewer({ ref }: { ref?: Ref<DialogRef> }) {
               size="small"
               onClick={() => {
                 openUrl(
-                  `https://bbxy88.com`,
+                  `https://daxun.shop`,
                 );
               }}
             >

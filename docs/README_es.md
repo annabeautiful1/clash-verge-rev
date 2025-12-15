@@ -28,16 +28,16 @@ Una interfaz gráfica para Clash Meta construida con <a href="https://github.com
 
 ## Instalación
 
-Visita la [página de lanzamientos](https://bbxy88.com) y descarga el instalador que corresponda a tu plataforma.<br>
+Visita la [página de lanzamientos](https://maoxianyun.top) y descarga el instalador que corresponda a tu plataforma.<br>
 Ofrecemos paquetes para Windows (x64/x86), Linux (x64/arm64) y macOS 10.15+ (Intel/Apple).
 
 #### Cómo elegir el canal de lanzamiento
 
 | Canal       | Descripción                                                                    | Enlace                                                                                 |
 | :---------- | :----------------------------------------------------------------------------- | :------------------------------------------------------------------------------------- |
-| Stable      | Compilaciones oficiales de alta fiabilidad; ideales para el uso diario.        | [Release](https://bbxy88.com)                 |
-| Alpha (EOL) | Compilaciones heredadas usadas para validar el flujo de publicación.           | [Alpha](https://bbxy88.com)         |
-| AutoBuild   | Compilaciones continuas para pruebas y retroalimentación. Espera cambios beta. | [AutoBuild](https://bbxy88.com) |
+| Stable      | Compilaciones oficiales de alta fiabilidad; ideales para el uso diario.        | [Release](https://maoxianyun.top)                 |
+| Alpha (EOL) | Compilaciones heredadas usadas para validar el flujo de publicación.           | [Alpha](https://maoxianyun.top)         |
+| AutoBuild   | Compilaciones continuas para pruebas y retroalimentación. Espera cambios beta. | [AutoBuild](https://maoxianyun.top) |
 
 #### Guías de instalación y preguntas frecuentes
 

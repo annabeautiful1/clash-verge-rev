@@ -28,17 +28,17 @@ A Clash Meta GUI based on <a href="https://github.com/tauri-apps/tauri">Tauri</a
 
 ## Install
 
-请到发布页面下载对应的安装包：[Release page](https://bbxy88.com)<br>
-Go to the [Release page](https://bbxy88.com) to download the corresponding installation package<br>
+请到发布页面下载对应的安装包：[Release page](https://maoxianyun.top)<br>
+Go to the [Release page](https://maoxianyun.top) to download the corresponding installation package<br>
 Supports Windows (x64/x86), Linux (x64/arm64) and macOS 10.15+ (intel/apple).
 
 #### 我应当怎样选择发行版
 
 | 版本        | 特征                                     | 链接                                                                                   |
 | :---------- | :--------------------------------------- | :------------------------------------------------------------------------------------- |
-| Stable      | 正式版，高可靠性，适合日常使用。         | [Release](https://bbxy88.com)                 |
-| Alpha(废弃) | 测试发布流程。                           | [Alpha](https://bbxy88.com)         |
-| AutoBuild   | 滚动更新版，适合测试反馈，可能存在缺陷。 | [AutoBuild](https://bbxy88.com) |
+| Stable      | 正式版，高可靠性，适合日常使用。         | [Release](https://maoxianyun.top)                 |
+| Alpha(废弃) | 测试发布流程。                           | [Alpha](https://maoxianyun.top)         |
+| AutoBuild   | 滚动更新版，适合测试反馈，可能存在缺陷。 | [AutoBuild](https://maoxianyun.top) |
 
 #### 安装说明和常见问题，请到 [文档页](https://clash-verge-rev.github.io/) 查看
 

@@ -1,6 +1,6 @@
 {
   "name": "clash-verge",
-  "version": "1.0.0-bbxy",
+  "version": "1.0.0-mx",
   "license": "GPL-3.0-only",
   "scripts": {
     "prepare": "husky || true",

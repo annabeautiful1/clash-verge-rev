@@ -20,7 +20,7 @@ const SettingPage = () => {
   };
 
   const toTelegramChannel = useLockFn(() => {
-    return openWebUrl("https://t.me/xiaoyingnews");
+    return openWebUrl("https://t.me/mao_xuan");
   });
 
   const mode = useThemeMode();

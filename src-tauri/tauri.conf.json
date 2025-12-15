@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-bbxy",
+  "version": "1.0.0-xfx",
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "bundle": {
     "active": true,
@@ -32,7 +32,7 @@
     "updater": {
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEQyOEMyRjBCQkVGOUJEREYKUldUZnZmbStDeStNMHU5Mmo1N24xQXZwSVRYbXA2NUpzZE5oVzlqeS9Bc0t6RVV4MmtwVjBZaHgK",
       "endpoints": [
-        "https://bbxy88.com/update.json"
+        "https://xfx88.top/update.json"
       ],
       "windows": {
         "installMode": "basicUi"

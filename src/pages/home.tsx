@@ -263,7 +263,7 @@ const HomePage = () => {
 
   // 官网链接函数
   const toOfficialWebsite = useLockFn(() => {
-    return openWebUrl("https://bbxy88.com");
+    return openWebUrl("https://xfx88.top");
   });
 
   // 新增：打开设置弹窗

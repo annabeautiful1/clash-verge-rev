@@ -23,7 +23,7 @@ export const translationKeys = [
   "connections.components.columnManager.title",
   "connections.components.columnManager.dragHandle",
   "home.page.tooltips.lightweightMode",
-  "home.page.tooltips.manual",
+  "home.page.tooltips.website",
   "home.page.tooltips.settings",
   "home.page.cards.trafficStats",
   "home.page.cards.networkSettings",
@@ -754,7 +754,7 @@ export const translationKeys = [
   "tests.unlock.page.empty",
   "tests.unlock.page.messages.detectionFailedWithName",
   "tests.unlock.page.messages.detectionTimeout",
-  "tests.unlock.page.title",
+  "tests.unlock.page.title"
 ] as const;
 
-export type TranslationKey = (typeof translationKeys)[number];
+export type TranslationKey = typeof translationKeys[number];
